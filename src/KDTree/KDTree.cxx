@@ -745,10 +745,10 @@ reduction(+:disp) num_threads(nthreads) if (nthreads>1)
         ibuildinparallel = false;
 #ifdef USEOPENMP
         ibuildinparallel = iBuildInParallel;
-        bool inested = omp_get_nested();
+        bool inested = _omp_get_nested();
         int nthreads = get_available_threads();
         if (nthreads == 1) ibuildinparallel = false;
-        if (inested == false) omp_set_nested(int(ibuildinparallel));
+        if (inested == false) _omp_set_nested(ibuildinparallel);
 #endif
         numparts = nparts;
         numleafnodes=numnodes=0;
@@ -782,7 +782,7 @@ reduction(+:disp) num_threads(nthreads) if (nthreads>1)
             if (splittingcriterion==1) for (int j=0;j<ND;j++) delete[] nientropy[j];
         }
 #ifdef USEOPENMP
-        omp_set_nested(inested);
+        _omp_set_nested(inested);
 #endif
     }
 
@@ -799,10 +799,10 @@ reduction(+:disp) num_threads(nthreads) if (nthreads>1)
         ibuildinparallel = false;
 #ifdef USEOPENMP
         ibuildinparallel = iBuildInParallel;
-        bool inested = omp_get_nested();
+        bool inested = _omp_get_nested();
         int nthreads = get_available_threads();
         if (nthreads == 1) ibuildinparallel = false;
-        if (inested == false) omp_set_nested(int(ibuildinparallel));
+        if (inested == false) _omp_set_nested(ibuildinparallel);
 #endif
         numparts = s.GetNumParts();
         numleafnodes=numnodes=0;
@@ -834,7 +834,7 @@ reduction(+:disp) num_threads(nthreads) if (nthreads>1)
             if (splittingcriterion==1) for (int j=0;j<ND;j++) delete[] nientropy[j];
         }
 #ifdef USEOPENMP
-        omp_set_nested(inested);
+        _omp_set_nested(inested);
 #endif
     }
     KDTree::~KDTree()
