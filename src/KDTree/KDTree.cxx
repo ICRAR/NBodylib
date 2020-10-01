@@ -14,6 +14,7 @@
 */
 
 #include <KDTree.h>
+#include <omp_utils.h>
 
 namespace NBody
 {
@@ -745,12 +746,7 @@ reduction(+:disp) num_threads(nthreads) if (nthreads>1)
 #ifdef USEOPENMP
         ibuildinparallel = iBuildInParallel;
         bool inested = omp_get_nested();
-        int nthreads;
-        #pragma omp parallel
-        #pragma omp single
-        {
-            nthreads = omp_get_num_threads();
-        }
+        int nthreads = get_available_threads();
         if (nthreads == 1) ibuildinparallel = false;
         if (inested == false) omp_set_nested(int(ibuildinparallel));
 #endif
@@ -804,12 +800,7 @@ reduction(+:disp) num_threads(nthreads) if (nthreads>1)
 #ifdef USEOPENMP
         ibuildinparallel = iBuildInParallel;
         bool inested = omp_get_nested();
-        int nthreads;
-        #pragma omp parallel
-        #pragma omp single
-        {
-            nthreads = omp_get_num_threads();
-        }
+        int nthreads = get_available_threads();
         if (nthreads == 1) ibuildinparallel = false;
         if (inested == false) omp_set_nested(int(ibuildinparallel));
 #endif
@@ -875,13 +866,7 @@ reduction(+:disp) num_threads(nthreads) if (nthreads>1)
         KDTreeOMPThreadPool ompthreadpool;
 #ifdef USEOPENMP
         if (ibuildinparallel) {
-            int nthreads;
-            #pragma omp parallel
-            #pragma omp single
-            {
-                nthreads = omp_get_num_threads();
-            }
-            ompthreadpool.nthreads = nthreads;
+            ompthreadpool.nthreads = get_available_threads();
         }
         else {
             ompthreadpool.nthreads = 1;
