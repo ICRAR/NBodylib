@@ -742,14 +742,8 @@ reduction(+:disp) num_threads(nthreads) if (nthreads>1)
     {
         iresetorder=true;
         ikeepinputorder = iKeepInputOrder;
-        ibuildinparallel = false;
-#ifdef USEOPENMP
-        ibuildinparallel = iBuildInParallel;
-        bool inested = _omp_get_nested();
-        int nthreads = get_available_threads();
-        if (nthreads == 1) ibuildinparallel = false;
-        if (inested == false) _omp_set_nested(ibuildinparallel);
-#endif
+        OmpNestedEnabler nested_enabler(iBuildInParallel);
+        ibuildinparallel = iBuildInParallel && nested_enabler.available_threads() > 1;
         numparts = nparts;
         numleafnodes=numnodes=0;
         bucket = p;
@@ -781,9 +775,6 @@ reduction(+:disp) num_threads(nthreads) if (nthreads>1)
             //else if (treetype==TMETRIC) root = BuildNodesDim(0, numparts,metric);
             if (splittingcriterion==1) for (int j=0;j<ND;j++) delete[] nientropy[j];
         }
-#ifdef USEOPENMP
-        _omp_set_nested(inested);
-#endif
     }
 
     KDTree::KDTree(System &s, Int_t bucket_size,
@@ -796,14 +787,8 @@ reduction(+:disp) num_threads(nthreads) if (nthreads>1)
 
         iresetorder=true;
         ikeepinputorder = iKeepInputOrder;
-        ibuildinparallel = false;
-#ifdef USEOPENMP
-        ibuildinparallel = iBuildInParallel;
-        bool inested = _omp_get_nested();
-        int nthreads = get_available_threads();
-        if (nthreads == 1) ibuildinparallel = false;
-        if (inested == false) _omp_set_nested(ibuildinparallel);
-#endif
+        OmpNestedEnabler nested_enabler(iBuildInParallel);
+        ibuildinparallel = iBuildInParallel && nested_enabler.available_threads() > 1;
         numparts = s.GetNumParts();
         numleafnodes=numnodes=0;
         bucket = s.Parts();
@@ -833,9 +818,6 @@ reduction(+:disp) num_threads(nthreads) if (nthreads>1)
             if (ibuildinparallel) BuildNodeIDs();
             if (splittingcriterion==1) for (int j=0;j<ND;j++) delete[] nientropy[j];
         }
-#ifdef USEOPENMP
-        _omp_set_nested(inested);
-#endif
     }
     KDTree::~KDTree()
     {

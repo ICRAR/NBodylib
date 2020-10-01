@@ -54,6 +54,52 @@ static void _omp_set_nested(bool enable)
 }
 #endif // USEOPENMP
 
+#ifdef USEOPENMP
+/**
+ * A class that enables OpenMP nested calls upon construction, if requested,
+ * and restores the previous behavior upon destruction.
+ */
+class OmpNestedEnabler
+{
+public:
+	OmpNestedEnabler(bool enable)
+	  : nested_previously_enabled(_omp_get_nested()),
+	    _available_threads(get_available_threads())
+	{
+		if (nested_previously_enabled || _available_threads == 1) {
+			return;
+		}
+		_omp_set_nested(enable);
+	}
+
+	~OmpNestedEnabler()
+	{
+		_omp_set_nested(nested_previously_enabled);
+	}
+
+	int available_threads()
+	{
+		return _available_threads;
+	}
+
+private:
+	bool nested_previously_enabled;
+	int _available_threads;
+};
+#else
+class OmpNestedEnabler
+{
+	OmpNestedEnabler(bool enable)
+	{
+	}
+
+	int available_threads()
+	{
+		return get_available_threads();
+	}
+};
+#endif
+
 }
 
 #endif // OMP_UTILS_H
