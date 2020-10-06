@@ -89,6 +89,7 @@ private:
 #else
 class OmpNestedEnabler
 {
+public:
 	OmpNestedEnabler(bool enable)
 	{
 	}
